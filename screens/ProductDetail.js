@@ -1,68 +1,128 @@
-import React, { useState } from "react";
-import { Text, StyleSheet, ScrollView, Image, Touchable } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import {
+  StyleSheet,
+  Text,
+  ScrollView,
+  View,
+  Image,
+  TouchableOpacity,
+} from "react-native";
+import { useRoute } from "@react-navigation/native";
+import { useState } from "react";
 
-const ProductDetail = ({ route }) => {
-    const { title, description, price, image} = route.params; 
-    
-    const  [quantity, setQuantity] = useState(1);
-    
-    const increaseQuantity = () => setQuantity{quantity + 1};
-        const decreaseQuantity = () => {
-            if (quantity > 1) {
-                setQuantity(quantity - 1);
-            }
-        }; 
-    
-    return {
-        <ScrollView style={styles.container}>
-            <Text style={styles.title}>Detailscherm</Text>
-            <Image source={image} style={styles.image} />
-            <Text style={styles.title}>{title}</Text>
-            <Text style={styles.description}>{description}</Text>
-            <Text style={styles.price}>{price}</Text>
+const ProductDetail = () => {
+  const route = useRoute();
 
-            <View style={styles.quantityContainer}>
-                <TouchableOpacity style={styles.button} onPress={decreaseQuantity}>
-                    <Text style={styles.buttonText}></Text>
-                </TouchableOpacity>
+  const {
+    title = "Liberica",
+    description = "Onze Liberica koffiebonen zijn er voor wie iets anders durft dan de klassieke Arabica.",
+    price = "$5.00",
+    image = require("../assets/Liberica.jpg"),
+  } = route.params || {};
 
-                <Text style={styles.quantityText}>{quantity}</Text>
+  const [quantity, setQuantity] = useState(1);
+  const increaseQuantity = () => setQuantity(quantity + 1);
+  const decreaseQuantity = () => {
+    if (quantity > 1) setQuantity(quantity - 1);
+  };
 
-                <TouchableOpacity style={styles.button} onPress={increaseQuantity}>
-                    <Text style={styles.buttonText}></Text>
-                </TouchableOpacity>
-            </View>
+  return (
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
+      <Text style={styles.title}>Product Details</Text>
+      <Image source={image} style={styles.image} />
+      <Text style={styles.productTitle}>{title}</Text>
+      <Text style={styles.price}>${price * quantity}</Text>
+      <Text style={styles.description}>{description}</Text>
+      <StatusBar style="auto" />
 
-            <Text style={styles.totalPrice}>Totaal: €{price * quantity}</Text>
-            </View>
-
-        </ScrollView>
-    };
+      <View style={styles.quantityContainer}>
+        <TouchableOpacity
+          onPress={decreaseQuantity}
+          style={styles.quantityButton}
+        >
+          <Text style={styles.quantityButtonText}>-</Text>
+        </TouchableOpacity>
+        <Text style={styles.quantityText}>{quantity}</Text>
+        <TouchableOpacity
+          onPress={increaseQuantity}
+          style={styles.quantityButton}
+        >
+          <Text style={styles.quantityButtonText}>+</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+  );
 };
 
 const styles = StyleSheet.create({
-    card: {
-        width: 300, 
-        padding: 16, 
-        backgroundColor: "#fff", 
-        borderRadius: 8, 
-        marginBottom: 16, 
-    }, 
-    image: {
-        width: "100%", 
-        height: 150, 
-        borderRadius: 8,
-    }, 
-    title: {
-        fontSize: 18, 
-        fontWeiht: "bold", 
-        marginTop: 8,
-    }, 
-    description: {
-        fontSize: 14,
-        Color: "#555",
-        marginTop: 4,
-    },
+  container: {
+    flex: 1,
+    backgroundColor: "#00ff00",
+  },
+  contentContainer: {
+    padding: 20,
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  image: {
+    width: 300,
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  productTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  description: {
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 15,
+  },
+  price: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#007AFF",
+    marginBottom: 20,
+  },
+  featuresTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  features: {
+    fontSize: 16,
+    textAlign: "left",
+    width: "100%",
+  },
+  quantityContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  quantityButton: {
+    backgroundColor: "#007AFF",
+    padding: 10,
+    borderRadius: 5,
+    marginHorizontal: 10,
+  },
+  quantityButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  quantityText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
 });
 
-export default ProductDetail; // dit moet helemaal vanonder staan 
+export default ProductDetail;
