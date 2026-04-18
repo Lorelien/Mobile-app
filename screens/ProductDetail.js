@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
@@ -8,7 +9,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useRoute } from "@react-navigation/native";
-import { useState } from "react";
 
 const ProductDetail = () => {
   const route = useRoute();
@@ -16,27 +16,29 @@ const ProductDetail = () => {
   const {
     title = "Liberica",
     description = "Onze Liberica koffiebonen zijn er voor wie iets anders durft dan de klassieke Arabica.",
-    price = "$5.00",
-    image = require("../assets/Liberica.jpg"),
+    price = 5.0,
+    image = require("../assets/images/Liberica.jpg"),
   } = route.params || {};
 
   const [quantity, setQuantity] = useState(1);
+
   const increaseQuantity = () => setQuantity(quantity + 1);
   const decreaseQuantity = () => {
     if (quantity > 1) setQuantity(quantity - 1);
   };
+
+  const totalPrice = (price * quantity).toFixed(2);
 
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
     >
-      <Text style={styles.title}>Product Details</Text>
+      <Text style={styles.title}>Product details</Text>
       <Image source={image} style={styles.image} />
       <Text style={styles.productTitle}>{title}</Text>
-      <Text style={styles.price}>${price * quantity}</Text>
+      <Text style={styles.price}>€{totalPrice}</Text>
       <Text style={styles.description}>{description}</Text>
-      <StatusBar style="auto" />
 
       <View style={styles.quantityContainer}>
         <TouchableOpacity
@@ -45,7 +47,9 @@ const ProductDetail = () => {
         >
           <Text style={styles.quantityButtonText}>-</Text>
         </TouchableOpacity>
+
         <Text style={styles.quantityText}>{quantity}</Text>
+
         <TouchableOpacity
           onPress={increaseQuantity}
           style={styles.quantityButton}
@@ -53,6 +57,8 @@ const ProductDetail = () => {
           <Text style={styles.quantityButtonText}>+</Text>
         </TouchableOpacity>
       </View>
+
+      <StatusBar style="auto" />
     </ScrollView>
   );
 };
@@ -60,7 +66,7 @@ const ProductDetail = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#00ff00",
+    backgroundColor: "#fffaf5",
   },
   contentContainer: {
     padding: 20,
@@ -70,38 +76,31 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
+    color: "#3b2a1f",
   },
   image: {
     width: 300,
-    height: 200,
-    borderRadius: 10,
+    height: 220,
+    borderRadius: 12,
     marginBottom: 20,
   },
   productTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
     marginBottom: 10,
+    color: "#3b2a1f",
   },
   description: {
     fontSize: 16,
     textAlign: "center",
     marginBottom: 15,
+    color: "#555",
   },
   price: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
-    color: "#007AFF",
+    color: "#8b4513",
     marginBottom: 20,
-  },
-  featuresTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  features: {
-    fontSize: 16,
-    textAlign: "left",
-    width: "100%",
   },
   quantityContainer: {
     flexDirection: "row",
@@ -109,9 +108,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   quantityButton: {
-    backgroundColor: "#007AFF",
-    padding: 10,
-    borderRadius: 5,
+    backgroundColor: "#6f4e37",
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
     marginHorizontal: 10,
   },
   quantityButtonText: {
@@ -120,8 +120,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   quantityText: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
+    color: "#3b2a1f",
   },
 });
 

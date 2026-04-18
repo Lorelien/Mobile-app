@@ -1,118 +1,119 @@
+import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, ScrollView, View, Image } from "react-native";
-import ProductCard from "../component/ProductCard";
+import {
+  StyleSheet,
+  Text,
+  ScrollView,
+  View,
+  TextInput,
+  Switch,
+} from "react-native";
+import ProductCard from "../components/ProductCard";
 import BlogCard from "../components/BlogCard";
 
-const HomeScreen = ({navigation}) => {
-   const [showFavorites, setShowFavorites] = useState(false);
-   const [favorites, setFavorites] = useState([]);
-  
+const HomeScreen = () => {
+  const [showFavorites, setShowFavorites] = useState(false);
+  const [favorites, setFavorites] = useState([]);
+  const [searchText, setSearchText] = useState("");
+
   const products = [
     {
       id: "1",
       title: "Liberica",
-      description: "Onze Liberica koffiebonen zijn er voor wie iets anders durft dan de klassieke Arabica.",
-      price: "5.00",
-      image: require("../images/Liberica.jpg"),
+      description:
+        "Onze Liberica koffiebonen zijn er voor wie iets anders durft dan de klassieke Arabica.",
+      price: 5.0,
+      image: require("../assets/images/Liberica.jpg"),
     },
     {
       id: "2",
       title: "Robusta",
-      description: "",
-      price: "$5.00",
-      image: require("../images/Robusta.jpg"),
+      description: "Een krachtige koffie met een volle en intense smaak.",
+      price: 5.0,
+      image: require("../assets/images/Robusta.jpg"),
     },
     {
       id: "3",
       title: "Arabica",
-      description: "",
-      price: "$5.00",
-      image: require("../images/Arabica.jpg"),
+      description: "Een zachte en aromatische koffie met verfijnde toetsen.",
+      price: 5.0,
+      image: require("../assets/images/Arabica.jpg"),
     },
   ];
 
   const blogs = [
     {
       id: "1",
-      title: "5 manieren om thuis koffie te zetten die smaakt als in je favoriete koffiezaak",
-      description:
-        "5 januari, 2026",
+      title:
+        "5 manieren om thuis koffie te zetten die smaakt als in je favoriete koffiezaak",
+      description: "5 januari 2026",
       longDescription:
-        "Je betaalt €4 voor een flat white in je favoriete zaak, maar thuis smaakt €12 specialty koffie nergens naar. Het ligt niet aan de boon. Het ligt aan hoe je zet.",
-      image: require("../images/blog1.jpg"),
+        "Je betaalt €4 voor een flat white in je favoriete zaak, maar thuis smaakt specialty koffie vaak anders. Het ligt niet alleen aan de boon, maar ook aan hoe je zet.",
+      image: require("../assets/images/blog1.jpg"),
     },
     {
       id: "2",
       title: "De beste koffiebonen voor beginners: kies je eerste specialty koffie",
-      description:
-        "8 januari, 2026",
+      description: "8 januari 2026",
       longDescription:
-        "Je hebt 'specialty koffie' horen zoemen in koffiebars en op Instagram. Score 80+, single origin, vers gebrand. Klinkt goed, maar waar begin je?",
-      image: require("../images/blog1.jpg"),
+        "Specialty koffie klinkt vaak ingewikkeld, maar je hoeft niet alles meteen te kennen. Begin met een zachte koffie en ontdek stap voor stap wat jij lekker vindt.",
+      image: require("../assets/images/blog1.jpg"),
     },
   ];
+
+  const filteredProducts = products.filter((product) => {
+    const matchesFavorites = showFavorites ? favorites.includes(product.id) : true;
+    const matchesSearch =
+      product.title.toLowerCase().includes(searchText.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchText.toLowerCase());
+
+    return matchesFavorites && matchesSearch;
+  });
 
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
     >
-      <Text style={styles.H1}>Koffie</Text>
-    
+      <Text style={styles.h1}>Koffie</Text>
+
       <View style={styles.searchBar}>
         <TextInput
           style={styles.searchBarText}
           placeholder="Waar ben je naar op zoek?"
+          value={searchText}
+          onChangeText={setSearchText}
         />
       </View>
 
-       {/* Switch */}
       <View style={styles.switchRow}>
-        <Text>Toon favorieten</Text>
+        <Text style={styles.switchText}>Toon favorieten</Text>
         <Switch value={showFavorites} onValueChange={setShowFavorites} />
       </View>
 
-      {/* Producten */}
       <View style={styles.grid}>
-        {products
-          .filter((product) => {
-            if (showFavorites) {
-              return favorites.includes(product.id);
-            }
-            return true;
-          })
-          .map((product) => (
-            <View style={styles.card} key={product.id}>
-              <ProductCard
-                {...product}
-                isFavorite={favorites.includes(product.id)}
-                onToggleFavorite={(id) => {
-                  setFavorites((prev) =>
-                    prev.includes(id)
-                      ? prev.filter((fav) => fav !== id)
-                      : [...prev, id],
-                  );
-                }}
-              />
-            </View>
-          ))}
+        {filteredProducts.map((product) => (
+          <View style={styles.cardWrapper} key={product.id}>
+            <ProductCard
+              {...product}
+              isFavorite={favorites.includes(product.id)}
+              onToggleFavorite={(id) => {
+                setFavorites((prev) =>
+                  prev.includes(id)
+                    ? prev.filter((fav) => fav !== id)
+                    : [...prev, id]
+                );
+              }}
+            />
+          </View>
+        ))}
+      </View>
 
-        <View style={{ marginTop: 20 }}>
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: "bold",
-              marginBottom: 10,
-              paddingLeft: 10,
-            }}
-          >
-            Blogs
-          </Text>
-
-          {blogs.map((blog) => (
-            <BlogCard key={blog.id} {...blog} />
-          ))}
-        </View>
+      <View style={styles.blogSection}>
+        <Text style={styles.sectionTitle}>Blogs</Text>
+        {blogs.map((blog) => (
+          <BlogCard key={blog.id} {...blog} />
+        ))}
       </View>
 
       <StatusBar style="auto" />
@@ -123,19 +124,51 @@ const HomeScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#fffaf5",
   },
   contentContainer: {
-    justifyContent: "center",
+    padding: 16,
+  },
+  h1: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginBottom: 16,
+    color: "#3b2a1f",
+  },
+  searchBar: {
+    backgroundColor: "#f2ebe5",
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 16,
+  },
+  searchBarText: {
+    fontSize: 16,
+  },
+  switchRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 20,
+  },
+  switchText: {
+    fontSize: 16,
+    color: "#3b2a1f",
   },
   grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
+    flexDirection: "column",
   },
-  card: {
-    width: "48%",
+  cardWrapper: {
+    marginBottom: 16,
+  },
+  blogSection: {
+    marginTop: 16,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 12,
+    color: "#3b2a1f",
   },
 });
 

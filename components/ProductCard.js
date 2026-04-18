@@ -11,31 +11,48 @@ import {
 } from "react-native";
 
 const ProductCard = ({
-  title = "Liberica",
-  description = "Onze Liberica koffiebonen zijn er voor wie iets anders durft dan de klassieke Arabica.",
-  price = "$5.00",
-  image = require("../assets/Liberica.jpg"),
-  onPress,
+  id,
+  title,
+  description,
+  price,
+  image,
+  isFavorite,
+  onToggleFavorite,
 }) => {
-  const [subscribed, setSubscribed] = useState(false);
   const navigation = useNavigation();
+  const [quantity, setQuantity] = useState("1");
+  const [subscribed, setSubscribed] = useState(false);
 
   return (
     <View style={styles.card}>
       <Image source={image} style={styles.image} />
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.description}>{description}</Text>
-      <Text style={styles.description}>${price}</Text>
-      <Text style={styles.label}>Amount</Text>
+      <Text style={styles.price}>€{price.toFixed(2)}</Text>
+
+      <Text style={styles.label}>Aantal</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter quantity"
+        placeholder="Voer aantal in"
         keyboardType="numeric"
+        value={quantity}
+        onChangeText={setQuantity}
       />
+
       <View style={styles.switchContainer}>
-        <Text style={styles.switchLabel}>Auto-Refill Subscription</Text>
+        <Text style={styles.switchLabel}>Abonnement</Text>
         <Switch value={subscribed} onValueChange={setSubscribed} />
       </View>
+
+      <Pressable
+        style={styles.favoriteButton}
+        onPress={() => onToggleFavorite(id)}
+      >
+        <Text style={styles.favoriteButtonText}>
+          {isFavorite ? "Verwijder uit favorieten" : "Voeg toe aan favorieten"}
+        </Text>
+      </Pressable>
+
       <Pressable
         style={styles.button}
         onPress={() =>
@@ -47,7 +64,7 @@ const ProductCard = ({
           })
         }
       >
-        <Text style={styles.buttonText}>Look at product</Text>
+        <Text style={styles.buttonText}>Bekijk product</Text>
       </Pressable>
     </View>
   );
@@ -55,26 +72,44 @@ const ProductCard = ({
 
 const styles = StyleSheet.create({
   card: {
-    width: 300,
+    width: "100%",
     padding: 16,
-    backgroundColor: "#fff",
-    borderRadius: 8,
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
     marginBottom: 16,
   },
   image: {
     width: "100%",
-    height: 150,
+    height: 180,
     borderRadius: 8,
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
-    marginTop: 8,
+    marginTop: 10,
+    color: "#3b2a1f",
   },
   description: {
     fontSize: 14,
     color: "#555",
-    marginTop: 4,
+    marginTop: 6,
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 8,
+    color: "#8b4513",
+  },
+  label: {
+    marginTop: 12,
+    marginBottom: 6,
+    fontWeight: "600",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 10,
   },
   switchContainer: {
     flexDirection: "row",
@@ -86,11 +121,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#333",
   },
-  button: {
-    backgroundColor: "#007AFF",
+  favoriteButton: {
+    backgroundColor: "#d8c3a5",
     paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 6,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 12,
+  },
+  favoriteButtonText: {
+    color: "#3b2a1f",
+    fontWeight: "bold",
+  },
+  button: {
+    backgroundColor: "#6f4e37",
+    paddingVertical: 12,
+    borderRadius: 8,
     alignItems: "center",
     marginTop: 12,
   },
