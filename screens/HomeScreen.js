@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { StatusBar } from "expo-status-bar";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,68 +6,71 @@ import {
   View,
   TextInput,
   Switch,
+  ActivityIndicator,
 } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import ProductCard from "../components/ProductCard";
 import BlogCard from "../components/BlogCard";
+import { fetchProducts, fetchBlogs } from "../services/webflow";
 
 const HomeScreen = () => {
   const [showFavorites, setShowFavorites] = useState(false);
   const [favorites, setFavorites] = useState([]);
   const [searchText, setSearchText] = useState("");
 
-  const products = [
-    {
-      id: "1",
-      title: "Liberica",
-      description:
-        "Onze Liberica koffiebonen zijn er voor wie iets anders durft dan de klassieke Arabica.",
-      price: 5.0,
-      image: require("../assets/images/Liberica.jpg"),
-    },
-    {
-      id: "2",
-      title: "Robusta",
-      description: "Een krachtige koffie met een volle en intense smaak.",
-      price: 5.0,
-      image: require("../assets/images/Robusta.jpg"),
-    },
-    {
-      id: "3",
-      title: "Arabica",
-      description: "Een zachte en aromatische koffie met verfijnde toetsen.",
-      price: 5.0,
-      image: require("../assets/images/Arabica.jpg"),
-    },
-  ];
+  const [products, setProducts] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(""); 
 
-  const blogs = [
-    {
-      id: "1",
-      title:
-        "5 manieren om thuis koffie te zetten die smaakt als in je favoriete koffiezaak",
-      description: "5 januari 2026",
-      longDescription:
-        "Je betaalt €4 voor een flat white in je favoriete zaak, maar thuis smaakt specialty koffie vaak anders. Het ligt niet alleen aan de boon, maar ook aan hoe je zet.",
-      image: require("../assets/images/blog1.jpg"),
-    },
-    {
-      id: "2",
-      title: "De beste koffiebonen voor beginners: kies je eerste specialty koffie",
-      description: "8 januari 2026",
-      longDescription:
-        "Specialty koffie klinkt vaak ingewikkeld, maar je hoeft niet alles meteen te kennen. Begin met een zachte koffie en ontdek stap voor stap wat jij lekker vindt.",
-      image: require("../assets/images/blog1.jpg"),
-    },
-  ];
+  useEffect(() => {
+  const loadData = async () => {
+    try {
+      const [productsData, blogsData] = await Promise.all([
+        fetchProducts(),
+        fetchBlogs(),
+      ]);
 
-  const filteredProducts = products.filter((product) => {
-    const matchesFavorites = showFavorites ? favorites.includes(product.id) : true;
+      setProducts(productsData);
+      setBlogs(blogsData);
+    } catch (err) {
+      setError("Er ging iets mis bij het ophalen van de Webflow data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  loadData();
+}, []);
+
+const filteredProducts = products.filter((product) => {
+    const matchesFavorites = showFavorites
+      ? favorites.includes(product.id)
+      : true;
+
     const matchesSearch =
       product.title.toLowerCase().includes(searchText.toLowerCase()) ||
       product.description.toLowerCase().includes(searchText.toLowerCase());
 
     return matchesFavorites && matchesSearch;
   });
+
+if (loading) {
+  return (
+    <View style={styles.center}>
+      <ActivityIndicator size="large" color="#6f4e37" />
+      <Text>Data laden...</Text>
+    </View>
+  );
+}
+
+if (error) {
+  return (
+    <View style={styles.center}>
+      <Text>{error}</Text>
+    </View>
+  );
+}
 
   return (
     <ScrollView

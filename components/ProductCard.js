@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
   StyleSheet,
@@ -6,8 +6,6 @@ import {
   View,
   Image,
   Pressable,
-  Switch,
-  TextInput,
 } from "react-native";
 
 const ProductCard = ({
@@ -20,36 +18,28 @@ const ProductCard = ({
   onToggleFavorite,
 }) => {
   const navigation = useNavigation();
-  const [quantity, setQuantity] = useState("1");
-  const [subscribed, setSubscribed] = useState(false);
 
   return (
     <View style={styles.card}>
-      <Image source={image} style={styles.image} />
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.description}>{description}</Text>
-      <Text style={styles.price}>€{price.toFixed(2)}</Text>
-
-      <Text style={styles.label}>Aantal</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Voer aantal in"
-        keyboardType="numeric"
-        value={quantity}
-        onChangeText={setQuantity}
+      <Image
+        source={
+          image
+            ? { uri: image }
+            : require("../assets/images/Liberica.jpg")
+        }
+        style={styles.image}
       />
 
-      <View style={styles.switchContainer}>
-        <Text style={styles.switchLabel}>Abonnement</Text>
-        <Switch value={subscribed} onValueChange={setSubscribed} />
-      </View>
+      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.description}>{description}</Text>
+      <Text style={styles.price}>€{Number(price).toFixed(2)}</Text>
 
       <Pressable
         style={styles.favoriteButton}
         onPress={() => onToggleFavorite(id)}
       >
         <Text style={styles.favoriteButtonText}>
-          {isFavorite ? "Verwijder uit favorieten" : "Voeg toe aan favorieten"}
+          {isFavorite ? "Verwijder favoriet" : "Voeg toe aan favorieten"}
         </Text>
       </Pressable>
 
@@ -99,27 +89,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 8,
     color: "#8b4513",
-  },
-  label: {
-    marginTop: 12,
-    marginBottom: 6,
-    fontWeight: "600",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 10,
-  },
-  switchContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 12,
-  },
-  switchLabel: {
-    fontSize: 14,
-    color: "#333",
   },
   favoriteButton: {
     backgroundColor: "#d8c3a5",

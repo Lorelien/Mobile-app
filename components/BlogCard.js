@@ -7,7 +7,14 @@ const BlogCard = ({ title, description, longDescription, image }) => {
 
   return (
     <View style={styles.card}>
-      <Image source={image} style={styles.image} />
+      <Image
+        source={
+          image
+            ? { uri: image }
+            : require("../assets/images/blog1.jpg")
+        }
+        style={styles.image}
+      />
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.description}>{description}</Text>
 

@@ -8,12 +8,19 @@ const BlogDetail = () => {
     title = "Blog titel",
     description = "Korte beschrijving",
     longDescription = "Lange tekst van de blog...",
-    image = require("../assets/images/blog1.jpg"),
+    image = null,
   } = route.params || {};
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Image source={image} style={styles.image} />
+      <Image
+        source={
+          image
+            ? { uri: image }
+            : require("../assets/images/blog1.jpg")
+        }
+        style={styles.image}
+      />
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.description}>{description}</Text>
       <Text style={styles.longText}>{longDescription}</Text>

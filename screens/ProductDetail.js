@@ -17,7 +17,7 @@ const ProductDetail = () => {
     title = "Liberica",
     description = "Onze Liberica koffiebonen zijn er voor wie iets anders durft dan de klassieke Arabica.",
     price = 5.0,
-    image = require("../assets/images/Liberica.jpg"),
+    image = null,
   } = route.params || {};
 
   const [quantity, setQuantity] = useState(1);
@@ -27,7 +27,7 @@ const ProductDetail = () => {
     if (quantity > 1) setQuantity(quantity - 1);
   };
 
-  const totalPrice = (price * quantity).toFixed(2);
+  const totalPrice = (Number(price) * quantity).toFixed(2);
 
   return (
     <ScrollView
@@ -35,7 +35,16 @@ const ProductDetail = () => {
       contentContainerStyle={styles.contentContainer}
     >
       <Text style={styles.title}>Product details</Text>
-      <Image source={image} style={styles.image} />
+
+      <Image
+        source={
+          image
+            ? { uri: image }
+            : require("../assets/images/Liberica.jpg")
+        }
+        style={styles.image}
+      />
+
       <Text style={styles.productTitle}>{title}</Text>
       <Text style={styles.price}>€{totalPrice}</Text>
       <Text style={styles.description}>{description}</Text>
