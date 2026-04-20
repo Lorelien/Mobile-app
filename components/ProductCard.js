@@ -32,7 +32,7 @@ const ProductCard = ({
 
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.description}>{description}</Text>
-      <Text style={styles.price}>€{Number(price).toFixed(2)}</Text>
+      <Text style={styles.price}>{price}</Text>
 
       <Pressable
         style={styles.favoriteButton}

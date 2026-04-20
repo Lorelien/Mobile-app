@@ -46,7 +46,7 @@ const ProductDetail = () => {
       />
 
       <Text style={styles.productTitle}>{title}</Text>
-      <Text style={styles.price}>€{totalPrice}</Text>
+      <Text style={styles.price}>{price}</Text>
       <Text style={styles.description}>{description}</Text>
 
       <View style={styles.quantityContainer}>

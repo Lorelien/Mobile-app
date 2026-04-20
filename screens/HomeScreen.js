@@ -23,18 +23,17 @@ const HomeScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(""); 
 
-  useEffect(() => {
+  
+useEffect(() => {
   const loadData = async () => {
     try {
-      const [productsData, blogsData] = await Promise.all([
-        fetchProducts(),
-        fetchBlogs(),
-      ]);
+      const productsData = await fetchProducts();
+      const blogsData = await fetchBlogs();
 
       setProducts(productsData);
       setBlogs(blogsData);
     } catch (err) {
-      setError("Er ging iets mis bij het ophalen van de Webflow data.");
+      setError(`Er ging iets mis: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -94,29 +93,35 @@ if (error) {
       </View>
 
       <View style={styles.grid}>
-        {filteredProducts.map((product) => (
-          <View style={styles.cardWrapper} key={product.id}>
-            <ProductCard
-              {...product}
-              isFavorite={favorites.includes(product.id)}
-              onToggleFavorite={(id) => {
-                setFavorites((prev) =>
-                  prev.includes(id)
-                    ? prev.filter((fav) => fav !== id)
-                    : [...prev, id]
-                );
-              }}
-            />
-          </View>
-        ))}
-      </View>
+  {filteredProducts.map((product, index) => (
+    <View
+      style={styles.cardWrapper}
+      key={product.id ? `product-${product.id}` : `product-${index}`}
+    >
+      <ProductCard
+        {...product}
+        isFavorite={favorites.includes(product.id)}
+        onToggleFavorite={(id) => {
+          setFavorites((prev) =>
+            prev.includes(id)
+              ? prev.filter((fav) => fav !== id)
+              : [...prev, id]
+          );
+        }}
+      />
+    </View>
+  ))}
+</View>
 
       <View style={styles.blogSection}>
-        <Text style={styles.sectionTitle}>Blogs</Text>
-        {blogs.map((blog) => (
-          <BlogCard key={blog.id} {...blog} />
-        ))}
-      </View>
+  <Text style={styles.sectionTitle}>Blogs</Text>
+  {blogs.map((blog, index) => (
+    <BlogCard
+      key={blog.id ? `blog-${blog.id}` : `blog-${index}`}
+      {...blog}
+    />
+  ))}
+</View>
 
       <StatusBar style="auto" />
     </ScrollView>

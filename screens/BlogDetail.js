@@ -11,6 +11,13 @@ const BlogDetail = () => {
     image = null,
   } = route.params || {};
 
+  const cleanText = longDescription
+    ? longDescription
+        .replace(/<br\s*\/?>/gi, "\n")
+        .replace(/<\/p>/gi, "\n\n")
+        .replace(/<[^>]+>/g, "")
+    : "Geen inhoud";
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image
@@ -23,7 +30,7 @@ const BlogDetail = () => {
       />
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.description}>{description}</Text>
-      <Text style={styles.longText}>{longDescription}</Text>
+      <Text style={styles.longText}>{cleanText}</Text>
     </ScrollView>
   );
 };
