@@ -1,10 +1,19 @@
-const WEBFLOW_TOKEN = "fb285d85cb37ac6a423995966bb17e044edbcad53ab65e14e4b184e3aaa38959";
+const WEBFLOW_TOKEN = "0c7286a2902cb370c4d2ad90fb638cb3ff3b290ac74a9f5f56cf653fc8eee9c5";
 const BLOGS_COLLECTION_ID = "699ef93f076328750d38d0de";
 const SITE_ID = "698c7fe5d14b024d93181e67";
 
 const headers = {
   Authorization: `Bearer ${WEBFLOW_TOKEN}`,
   Accept: "application/json",
+};
+
+const categoryNames = {
+  "69ac0b5975bfef7bb63f44ca": "Cadeau",
+  "69ac0b3fcccf4ccd6996b683": "Malen en wegen",
+  "69ac0aa33986fdb451a8e47e": "Zet-accessoires",
+  "69ac04a3f0f31535d2cc5551": "Koffie abonnement",
+  "69ac049510e50d610fec1d0b": "Koffiebonen",
+  "69ac04555d6f9b062111c438": "Koffie zetten thuis",
 };
 
 export const fetchProducts = async () => {
@@ -44,12 +53,25 @@ export const fetchProducts = async () => {
       item.fieldData?.["main-image"]?.url ||
       null;
 
+      const categoryId =
+        item.fieldData?.category ||
+        item.fieldData?.["category"] ||
+  "";
+      console.log("PRODUCT:", title);
+      console.log("RAW CATEGORY ID:", categoryId);
+      console.log("TYPE OF CATEGORY ID:", typeof categoryId);
+      console.log("MATCH IN categoryNames:", categoryNames[categoryId]);
+      console.log("ALL CATEGORY KEYS:", Object.keys(categoryNames));
+
+      const category = categoryNames[categoryId] || "Onbekend"; 
+
     return {
       id: item.id || `product-${index}`,
       title,
       description,
       price,
       image,
+      category,
     };
   });
 };

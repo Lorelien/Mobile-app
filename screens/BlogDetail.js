@@ -1,5 +1,6 @@
 import { StyleSheet, Text, Image, ScrollView } from "react-native";
 import { useRoute } from "@react-navigation/native";
+import { Picker } from "@react-native-picker/picker";
 
 const BlogDetail = () => {
   const route = useRoute();

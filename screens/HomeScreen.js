@@ -8,20 +8,22 @@ import {
   Switch,
   ActivityIndicator,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import { StatusBar } from "expo-status-bar";
 import ProductCard from "../components/ProductCard";
 import BlogCard from "../components/BlogCard";
 import { fetchProducts, fetchBlogs } from "../services/webflow";
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const [showFavorites, setShowFavorites] = useState(false);
   const [favorites, setFavorites] = useState([]);
-  const [searchText, setSearchText] = useState("");
-
   const [products, setProducts] = useState([]);
   const [blogs, setBlogs] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState("price-asc");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(""); 
+  const [error, setError] = useState("");
 
   
 useEffect(() => {
@@ -42,23 +44,46 @@ useEffect(() => {
   loadData();
 }, []);
 
-const filteredProducts = products.filter((product) => {
+const categories = [...new Set(products.map((p) => p.category).filter(Boolean))]; 
+
+const filteredProducts = [...products]
+  .filter((product) => {
+    const matchesCategory =
+      selectedCategory === "" || product.category === selectedCategory;
+
+    const matchesSearch =
+      product.title.toLowerCase().includes(searchQuery.toLowerCase());
+
     const matchesFavorites = showFavorites
       ? favorites.includes(product.id)
       : true;
 
-    const matchesSearch =
-      product.title.toLowerCase().includes(searchText.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchText.toLowerCase());
+    return matchesCategory && matchesSearch && matchesFavorites;
+  })
+  .sort((a, b) => {
+    if (sortOption === "price-asc") {
+      return a.rawPrice - b.rawPrice;
+    }
 
-    return matchesFavorites && matchesSearch;
+    if (sortOption === "price-desc") {
+      return b.rawPrice - a.rawPrice;
+    }
+
+    if (sortOption === "name-asc") {
+      return a.title.localeCompare(b.title);
+    }
+
+    if (sortOption === "name-desc") {
+      return b.title.localeCompare(a.title);
+    }
+
+    return 0;
   });
 
 if (loading) {
   return (
     <View style={styles.center}>
-      <ActivityIndicator size="large" color="#6f4e37" />
-      <Text>Data laden...</Text>
+      <Text>Laden...</Text>
     </View>
   );
 }
@@ -81,11 +106,41 @@ if (error) {
       <View style={styles.searchBar}>
         <TextInput
           style={styles.searchBarText}
-          placeholder="Waar ben je naar op zoek?"
-          value={searchText}
-          onChangeText={setSearchText}
+          placeholder="Zoek een product..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
         />
       </View>
+
+      <Text style={styles.filterLabel}>Filter op categorie</Text>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={selectedCategory}
+          onValueChange={(itemValue) => setSelectedCategory(itemValue)}
+          style={styles.picker}
+          itemStyle={styles.pickerItem}
+        >
+        <Picker.Item label="Alle categorieën" value="" />
+          {categories.map((category) => (
+        <Picker.Item key={category} label={category} value={category} />
+        ))}
+        </Picker>
+      </View>
+
+      <Text style={styles.filterLabel}>Sorteer producten</Text>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={sortOption}
+          onValueChange={(itemValue) => setSortOption(itemValue)}
+          style={styles.picker}
+          itemStyle={styles.pickerItem}
+        >
+        <Picker.Item label="Prijs oplopend" value="price-asc" />
+        <Picker.Item label="Prijs aflopend" value="price-desc" />
+        <Picker.Item label="Naam A-Z" value="name-asc" />
+        <Picker.Item label="Naam Z-A" value="name-desc" />
+      </Picker>
+    </View>
 
       <View style={styles.switchRow}>
         <Text style={styles.switchText}>Toon favorieten</Text>
@@ -93,11 +148,10 @@ if (error) {
       </View>
 
       <View style={styles.grid}>
-  {filteredProducts.map((product, index) => (
+      {filteredProducts.map((product) => (
     <View
       style={styles.cardWrapper}
-      key={product.id ? `product-${product.id}` : `product-${index}`}
-    >
+      key={product.id ? `product-${product.id}` : `product-${index}`}>
       <ProductCard
         {...product}
         isFavorite={favorites.includes(product.id)}
@@ -143,14 +197,14 @@ const styles = StyleSheet.create({
     color: "#3b2a1f",
   },
   searchBar: {
-    backgroundColor: "#f2ebe5",
+    backgroundColor: "#f2ece6",
     borderRadius: 10,
     paddingHorizontal: 12,
-    paddingVertical: 10,
-    marginBottom: 16,
+    marginBottom: 12,
   },
   searchBarText: {
     fontSize: 16,
+    height: 45,
   },
   switchRow: {
     flexDirection: "row",
@@ -163,19 +217,52 @@ const styles = StyleSheet.create({
     color: "#3b2a1f",
   },
   grid: {
-    flexDirection: "column",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
   cardWrapper: {
     marginBottom: 16,
   },
+  card: {
+    width: "48%",
+    marginBottom: 16,
+  },
   blogSection: {
-    marginTop: 16,
+    marginTop: 24,
   },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "bold",
     marginBottom: 12,
     color: "#3b2a1f",
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  filterLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#3b2a1f",
+    marginBottom: 6,
+    marginTop: 6,
+  },
+  pickerContainer: {
+    backgroundColor: "#f2ece6",
+    borderRadius: 10,
+    marginBottom: 12,
+    width: "100%",
+  },
+  picker: {
+    width: "100%",
+    height: 50,
+    color: "#3b2a1f",
+  },
+  pickerItem: {
+    color: "#3b2a1f",
+    fontSize: 16,
   },
 });
 

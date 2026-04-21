@@ -8,15 +8,14 @@ import {
   Pressable,
 } from "react-native";
 
-const ProductCard = ({
-  id,
-  title,
-  description,
-  price,
-  image,
-  isFavorite,
-  onToggleFavorite,
-}) => {
+const ProductCard = ({ 
+  title, 
+  description, 
+  price, 
+  image, 
+  category,
+  isFavorite, 
+  onToggleFavorite, id }) => {
   const navigation = useNavigation();
 
   return (
@@ -31,6 +30,7 @@ const ProductCard = ({
       />
 
       <Text style={styles.title}>{title}</Text>
+      <Text style={styles.category}>{category}</Text>
       <Text style={styles.description}>{description}</Text>
       <Text style={styles.price}>{price}</Text>
 
@@ -113,6 +113,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  category: {
+    alignSelf: "flex-start",
+    backgroundColor: "#e8d8c3",
+    color: "#7a5332",
+    fontSize: 12,
+    fontWeight: "600",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+    marginBottom: 8,
+},
 });
 
 export default ProductCard;
